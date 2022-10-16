@@ -2,7 +2,9 @@
 import telebot
 from MyToken import token
 from   telebot import types
-from parsing_k_m import *
+import csv
+import pandas as pd
+
 
 bot = telebot.TeleBot(token)
 
@@ -11,9 +13,6 @@ btn1 = types.InlineKeyboardButton('News today', callback_data='income')
 exit = types.InlineKeyboardButton('Quit', callback_data='quit')
 inline_keyboard.add(btn1, exit)
 
-income_keyboard = types.ReplyKeyboardMarkup()
-btn2 = types.InlineKeyboardButton('Description', callback_data='descr')
-income_keyboard.add(btn2)
 
 @bot.message_handler(commands=['start'])
 def start(message):
@@ -22,15 +21,14 @@ def start(message):
 
 
 def list_news():
-    with open('news.txt', 'r') as file: 
-        
+    with open('titles.txt', 'r') as file: 
         reader = file.readlines()
+        n = [f'{reader.index(l_item)+1} {l_item}' for l_item in reader[0:20]]
         news = []
-        for item in reader:
-            item.replace('\n', '')
-            news.append(item)
-        news = list(enumerate(news))[0:21]
-        return f'Новости сегодня: {news}'
+        for item in n:
+            item_ = item.replace('\n', '')
+            news.append(item_)
+        return news
         
 
 
@@ -38,43 +36,62 @@ def list_news():
 def inline(call): #message
     if call.data == 'income':
         chat_id = call.message.chat.id
-        list_news_ = list_news()
-        bot.send_message(chat_id, list_news_)
+        all_news = list_news()
+        # for i in range(21):
+        #     latest_news.append(all_news[i])
+        bot.send_message(chat_id, f'Latest news: \n{all_news}')
         bot.send_message(chat_id, 'Enter a number')
 
     if call.data == 'quit':
         chat_id = call.message.chat.id
         bot.send_message(chat_id, 'До свидания!')
 
-    
+choice = []
+
+@bot.message_handler(commands=['Description'])
+def descripption(message):
+    data = pd.read_csv('news.csv', sep=";", error_bad_lines=False)
+    try:
+        global choice
+        chat_id = message.chat.id
+        time = data['\n23:59 ']
+        bot.send_message(chat_id, time[choice[0]-1], reply_markup=inline_keyboard)
+    except:
+        bot.send_message(chat_id, 'Empty!', reply_markup=inline_keyboard)
+
+@bot.message_handler(commands=['Photo'])
+def descripption(message):
+    data = pd.read_csv('news.csv', sep=";", error_bad_lines=False)
+    try:
+        global choice
+        chat_id = message.chat.id
+        image = data['https://data.kaktus.media/image/small/2022-10-14_23-55-04_481669.jpg']
+        bot.send_message(chat_id, image[choice[0]-1], reply_markup=inline_keyboard)
+    except:
+        bot.send_message(chat_id, 'Empty!', reply_markup=inline_keyboard)
 
 @bot.message_handler(content_types=['text'])
 def item(message): 
+    global choice
     chat_id = message.chat.id
     j = int(message.text)
+    choice.append(j)
+    income_keyboard = types.ReplyKeyboardMarkup()
+    description = types.InlineKeyboardButton('/Description', callback_data='descr')
+    image = types.InlineKeyboardButton('/Photo', callback_data='photo')
+    income_keyboard.add(description, image)
     try: 
-        if j in range(20):
-            with open('news.txt') as file:
+        if j in range(21):
+            with open('titles.txt') as file:
                 reader = file.readlines()
                 item = list(reader)[j]
-                bot.send_message(chat_id, 'some title news you can see Description of this news and Photo')
-                bot.send_message(chat_id, item)
-
-                with open('news.csv') as file:
-                    reader1 = csv.reader(file)
-                    bot.send_message(chat_id, list(reader1)[j], reply_markup=inline_keyboard)                
+                response = f'The news item №{reader.index(item)}: {item}'
+                bot.send_message(chat_id, 'some title news you can see Description of this news and Photo', reply_markup=income_keyboard)
+                bot.send_message(chat_id, response)
+    
     except: 
         bot.send_message(chat_id, 'There is no such news!')
 
-
-# @bot.callback_query_handler(func = lambda c: True)
-# def income(c):
-#     if c.data == 'descr':
-#         chat_id = c.message.chat.id
-#         global choice
-#         with open('news.csv') as file:
-#             reader = csv.reader(file)
-#             bot.send_message(chat_id, list(reader)[choice[0]], reply_markup=inline_keyboard)
 
 if __name__ == '__main__':
     bot.infinity_polling()
