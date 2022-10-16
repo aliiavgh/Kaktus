@@ -4,7 +4,7 @@ from MyToken import token
 from   telebot import types
 import csv
 import pandas as pd
-
+import main
 
 bot = telebot.TeleBot(token)
 
@@ -18,12 +18,13 @@ inline_keyboard.add(btn1, exit)
 def start(message):
     chat_id = message.chat.id
     bot.send_message(chat_id, 'Show the news for today?', reply_markup=inline_keyboard)
+    main()
 
 
 def list_news():
     with open('titles.txt', 'r') as file: 
         reader = file.readlines()
-        n = [f'{reader.index(l_item)+1} {l_item}' for l_item in reader[0:20]]
+        n = [f'{reader.index(l_item)} {l_item}' for l_item in reader[0:20]]
         news = []
         for item in n:
             item_ = item.replace('\n', '')
@@ -37,10 +38,11 @@ def inline(call): #message
     if call.data == 'income':
         chat_id = call.message.chat.id
         all_news = list_news()
-        # for i in range(21):
-        #     latest_news.append(all_news[i])
-        bot.send_message(chat_id, f'Latest news: \n{all_news}')
         bot.send_message(chat_id, 'Enter a number')
+        for i in range(21):
+            bot.send_message(chat_id, all_news[i])
+        
+        # bot.send_message(chat_id, f'Latest news: \n{all_news}')
 
     if call.data == 'quit':
         chat_id = call.message.chat.id
@@ -54,8 +56,8 @@ def descripption(message):
     try:
         global choice
         chat_id = message.chat.id
-        time = data['\n23:59 ']
-        bot.send_message(chat_id, time[choice[0]-1], reply_markup=inline_keyboard)
+        time = data.iloc[choice[0]-1, 0]
+        bot.send_message(chat_id, time, reply_markup=inline_keyboard)
     except:
         bot.send_message(chat_id, 'Empty!', reply_markup=inline_keyboard)
 
@@ -65,14 +67,15 @@ def descripption(message):
     try:
         global choice
         chat_id = message.chat.id
-        image = data['https://data.kaktus.media/image/small/2022-10-14_23-55-04_481669.jpg']
-        bot.send_message(chat_id, image[choice[0]-1], reply_markup=inline_keyboard)
+        image = data.iloc[choice[0]-1, 2]
+        bot.send_message(chat_id, image, reply_markup=inline_keyboard)
     except:
         bot.send_message(chat_id, 'Empty!', reply_markup=inline_keyboard)
 
 @bot.message_handler(content_types=['text'])
 def item(message): 
     global choice
+    choice *= 0
     chat_id = message.chat.id
     j = int(message.text)
     choice.append(j)
@@ -81,7 +84,7 @@ def item(message):
     image = types.InlineKeyboardButton('/Photo', callback_data='photo')
     income_keyboard.add(description, image)
     try: 
-        if j in range(21):
+        if j in range(22):
             with open('titles.txt') as file:
                 reader = file.readlines()
                 item = list(reader)[j]

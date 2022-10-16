@@ -1,6 +1,8 @@
+from tkinter import image_names
 import requests
 from bs4 import BeautifulSoup as BS
 import csv
+import pandas as pd
 
 def get_html(url): 
     response = requests.get(url)
@@ -19,7 +21,7 @@ def get_data(soup):
         except:
             time = ''
         try: 
-            title = point.find('a', class_='ArticleItem--name').text.strip().replace('"', '/')
+            title = point.find('a', class_='ArticleItem--name').text.strip()
         except: 
             title = ''
         try:
@@ -28,18 +30,19 @@ def get_data(soup):
             image = ''
         
         write_csv({
-            'time':time,
-            'title':title, 
-            'image':image
+            'time': time,
+            'title': title, 
+            'image': image
         })
+        # write_csv([[time], [title], [image]])
 
         write_txt(title + '\n')
-    
         
 def write_csv(data):
-    with open('news.csv', 'a') as file: 
+    with open('news.csv', 'a', newline='') as file: 
         names = ['time', 'title', 'image']
         write = csv.DictWriter(file, delimiter=';', fieldnames=names)
+        # write.writeheader()
         write.writerow(data)
 
 def write_txt(data):
@@ -48,7 +51,7 @@ def write_txt(data):
 
 
 def main():
-    BASE_URL = 'https://kaktus.media/?lable=8&date=2022-10-14&order=time'
+    BASE_URL = 'https://kaktus.media/?lable=8&date=2022-10-16&order=time'
     html = get_html(BASE_URL)
     soup = get_soup(html)
     get_data(soup)
