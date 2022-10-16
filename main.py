@@ -17,7 +17,7 @@ def get_data(soup):
     news = all_news.find_all('div', class_='ArticleItem--data ArticleItem--data--withImage')
     for point in news: 
         try: 
-            time = point.find('div', class_='ArticleItem--time').text
+            time = point.find('div', class_='ArticleItem--time').text.strip()
         except:
             time = ''
         try: 
@@ -38,11 +38,11 @@ def get_data(soup):
 
         write_txt(title + '\n')
         
+
 def write_csv(data):
     with open('news.csv', 'a', newline='') as file: 
         names = ['time', 'title', 'image']
         write = csv.DictWriter(file, delimiter=';', fieldnames=names)
-        # write.writeheader()
         write.writerow(data)
 
 def write_txt(data):
