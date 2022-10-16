@@ -34,8 +34,7 @@ def get_data(soup):
             'title': title, 
             'image': image
         })
-        # write_csv([[time], [title], [image]])
-
+        
         write_txt(title + '\n')
         
 
