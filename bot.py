@@ -4,7 +4,7 @@ from MyToken import token
 from   telebot import types
 import csv
 import pandas as pd
-import main
+from main import main
 
 bot = telebot.TeleBot(token)
 
@@ -18,8 +18,7 @@ inline_keyboard.add(btn1, exit)
 def start(message):
     chat_id = message.chat.id
     bot.send_message(chat_id, 'Show the news for today?', reply_markup=inline_keyboard)
-    main()
-
+main()
 
 def list_news():
     with open('titles.txt', 'r') as file: 

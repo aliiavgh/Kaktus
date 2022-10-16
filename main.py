@@ -50,12 +50,11 @@ def write_txt(data):
 
 
 def main():
+    f1 = open('news.csv', 'w')
+    f1.close()
+    f2 = open('title.txt', 'w')
+    f2.close()
     BASE_URL = 'https://kaktus.media/?lable=8&date=2022-10-16&order=time'
     html = get_html(BASE_URL)
     soup = get_soup(html)
     get_data(soup)
-    
-    
-
-if __name__ == '__main__':
-    main()
