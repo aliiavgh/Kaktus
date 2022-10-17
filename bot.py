@@ -15,9 +15,9 @@ inline_keyboard.add(btn1, exit)
 
 @bot.message_handler(commands=['start'])
 def start(message):
+    main()
     chat_id = message.chat.id
     bot.send_message(chat_id, 'Show the news for today?', reply_markup=inline_keyboard)
-main()
 
 def list_news():
     with open('titles.txt', 'r') as file: 
@@ -28,8 +28,6 @@ def list_news():
             item_ = item.replace('\n', '')
             news.append(item_)
         return news
-        
-
 
 @bot.callback_query_handler(func = lambda c: True)
 def inline(call): #message

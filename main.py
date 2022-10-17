@@ -52,7 +52,7 @@ def write_txt(data):
 def main():
     f1 = open('news.csv', 'w')
     f1.close()
-    f2 = open('title.txt', 'w')
+    f2 = open('titles.txt', 'w')
     f2.close()
     date = datetime.date.today()
     BASE_URL = f'https://kaktus.media/?lable=8&date={date}&order=time'
