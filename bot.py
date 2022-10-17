@@ -1,4 +1,3 @@
-
 import telebot
 from MyToken import token
 from   telebot import types
@@ -55,8 +54,12 @@ def descripption(message):
     try:
         global choice
         chat_id = message.chat.id
-        time = data.iloc[choice[0]-1, 0]
-        bot.send_message(chat_id, time, reply_markup=inline_keyboard)
+        if choice[0]==0:
+            time = data.columns[0]
+            bot.send_message(chat_id, time, reply_markup=inline_keyboard)
+        else:
+            time = data.iloc[choice[0]-1, 0]
+            bot.send_message(chat_id, time, reply_markup=inline_keyboard)
     except:
         bot.send_message(chat_id, 'Empty!', reply_markup=inline_keyboard)
 
@@ -66,8 +69,12 @@ def descripption(message):
     try:
         global choice
         chat_id = message.chat.id
-        image = data.iloc[choice[0]-1, 2]
-        bot.send_message(chat_id, image, reply_markup=inline_keyboard)
+        if choice[0] == 0:
+            image = data.columns[2]
+            bot.send_message(chat_id, image, reply_markup=inline_keyboard)
+        else:
+            image = data.iloc[choice[0]-1, 2]
+            bot.send_message(chat_id, image, reply_markup=inline_keyboard)
     except:
         bot.send_message(chat_id, 'Empty!', reply_markup=inline_keyboard)
 

@@ -2,7 +2,7 @@ from tkinter import image_names
 import requests
 from bs4 import BeautifulSoup as BS
 import csv
-import pandas as pd
+import datetime 
 
 def get_html(url): 
     response = requests.get(url)
@@ -54,7 +54,8 @@ def main():
     f1.close()
     f2 = open('title.txt', 'w')
     f2.close()
-    BASE_URL = 'https://kaktus.media/?lable=8&date=2022-10-16&order=time'
+    date = datetime.date.today()
+    BASE_URL = f'https://kaktus.media/?lable=8&date={date}&order=time'
     html = get_html(BASE_URL)
     soup = get_soup(html)
     get_data(soup)
